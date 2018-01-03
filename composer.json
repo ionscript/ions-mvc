@@ -1,0 +1,44 @@
+{
+  "name": "ionscript/ions-mvc",
+  "description": "provides interface for MVC application architecture",
+  "license": "GPL-3.0+",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Serge Shportko",
+      "email": "ionscript.inc@gmail.com"
+    }
+  ],
+  "keywords": [
+    "ions",
+    "mvc"
+  ],
+  "homepage": "https://github.com/ionscript/ions-mvc",
+  "autoload": {
+    "psr-4": {
+      "Ions\\Mvc\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^5.6 || ^7.0",
+    "ionscript/ions-http": "master",
+    "ionscript/ions-route": "master",
+    "ionscript/ions-std": "master"
+  },
+  "require-dev": {},
+  "autoload-dev": {},
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/ionscript/ions-http.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/ionscript/ions-route.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/ionscript/ions-std.git"
+    }
+  ]
+}
