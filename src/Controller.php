@@ -31,9 +31,7 @@ abstract class Controller extends ServiceManager
             return $this->{$route};
         }
 
-        $parts = explode('/', $route);
-
-        $class = implode('\\', array_map('ucfirst', $parts)) . 'Model';
+        $class = ucwords($this->app->getName() . '\\' . str_replace('/', '\\', $route) . 'Model' , '\\');
 
         if (class_exists($class)) {
             $this->{$route} = new $class;
