@@ -31,7 +31,7 @@ abstract class Controller extends ServiceManager
             return $this->{$route};
         }
 
-        $class = ucwords($this->app->getName() . '\\' . str_replace('/', '\\', $route) . 'Model' , '\\');
+        $class = $this->app->getName() . '\\' . static::getModelFromRoute($route);
 
         if (class_exists($class)) {
             $this->{$route} = new $class;
@@ -47,13 +47,14 @@ abstract class Controller extends ServiceManager
 
     /**
      * @param $route
+     * @param $action
      * @return mixed
      */
-    public function controller($route)
+    public function controller($route, $action = 'index')
     {
         $controller = $this->get($route);
 
-        $method = static::getMethodFromAction('index');
+        $method = static::getMethodFromAction($action);
 
         return $controller->$method();
     }
@@ -153,5 +154,19 @@ abstract class Controller extends ServiceManager
         $method .= 'Action';
 
         return $method;
+    }
+
+    /**
+     * @param string $route
+     * @return mixed|string
+     */
+    public static function getModelFromRoute($route)
+    {
+        $model = str_replace(['.', '-', '_'], ' ', $route);
+        $model = ucwords($model, '/ ');
+        $model = str_replace([' ', '/'], ['', '\\'], $model);
+        $model .= strpos($model, 'Model') ? '' : 'Model';
+
+        return $model;
     }
 }
