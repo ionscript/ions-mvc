@@ -23,10 +23,19 @@ class Language
 
     /**
      * @param $language
+     * @return void
      */
     public function setLanguage($language)
     {
         $this->language = $language;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLanguage()
+    {
+        return $this->language;
     }
 
     /**
@@ -37,6 +46,14 @@ class Language
     {
         $this->directory = $directory;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDirectory()
+    {
+        return $this->directory;
     }
 
     /**
