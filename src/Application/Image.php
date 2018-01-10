@@ -47,7 +47,7 @@ class Image
      * @param array $options
      * @return static
      */
-    public static function factory(array $options = [])
+    public static function create(array $options = [])
     {
         $image = new static;
 
