@@ -88,7 +88,7 @@ abstract class Controller extends ServiceManager
         $class = $this->app->getName() . '\\' . static::getModelFromRoute($route);
 
         if (class_exists($class)) {
-            $this->{$route} = new $class($this->db, $this->config, $this->image);
+            $this->{$route} = new $class;
         } else {
             throw new \RuntimeException(sprintf(
                 'Could not load model %s!',

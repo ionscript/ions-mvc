@@ -6,19 +6,8 @@ namespace Ions\Mvc;
  * Class Model
  * @package Ions\Mvc
  */
-abstract class Model
+abstract class Model extends ServiceManager
 {
-    protected $db;
-    protected $config;
-    protected $image;
-
-    public function __construct($db, $config, $image)
-    {
-        $this->db = $db;
-        $this->config = $config;
-        $this->image = $image;
-    }
-
     /**
      * @return mixed
      */
