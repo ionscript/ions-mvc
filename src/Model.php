@@ -10,11 +10,13 @@ abstract class Model
 {
     protected $db;
     protected $config;
+    protected $image;
 
-    public function __construct($db, $config)
+    public function __construct($db, $config, $image)
     {
         $this->db = $db;
         $this->config = $config;
+        $this->image = $image;
     }
 
     /**
