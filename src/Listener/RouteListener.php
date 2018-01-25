@@ -8,7 +8,7 @@ use Ions\Event\ListenerInterface;
 use Ions\Event\ListenerTrait;
 use Ions\Mvc\Action;
 use Ions\Mvc\Application;
-use Ions\Router\RouteMatch;
+use Ions\Route\RouteMatch;
 
 /**
  * Class RouteListener

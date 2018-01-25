@@ -3,7 +3,7 @@
 namespace Ions\Mvc;
 
 use Ions\Event\Event;
-use Ions\Router\RouteMatch;
+use Ions\Route\RouteMatch;
 
 class Action extends Event
 {

@@ -6,7 +6,7 @@ use Ions\Event\EventManagerInterface;
 use Ions\Event\ListenerInterface;
 use Ions\Event\ListenerTrait;
 use Ions\Mvc\Action;
-use Ions\Router\RouteMatch;
+use Ions\Route\RouteMatch;
 
 /**
  * Class DispatchListener
