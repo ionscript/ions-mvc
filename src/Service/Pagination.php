@@ -56,7 +56,8 @@ class Pagination
     /**
      * @return string
      */
-    public function render() {
+    public function render()
+    {
         $total = $this->total;
 
         if ($this->page < 1) {
@@ -132,5 +133,20 @@ class Pagination
         }
 
         return '';
+    }
+
+    public function renderResult($text_pagination)
+    {
+        $page = $this->page;
+        $total = $this->total;
+        $limit = $this->limit;
+
+        return sprintf(
+            $text_pagination,
+            $total ? (($page - 1) * $limit) + 1 : 0,
+            ((($page - 1) * $limit) > ($total - $limit)) ? $total : ((($page - 1) * $limit) + $limit),
+            $total,
+            ceil($total / $limit)
+        );
     }
 }
