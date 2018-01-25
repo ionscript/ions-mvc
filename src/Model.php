@@ -9,10 +9,12 @@ namespace Ions\Mvc;
 abstract class Model
 {
     protected $db;
+    protected $config;
 
-    public function __construct($db)
+    public function __construct($db, $config)
     {
         $this->db = $db;
+        $this->config = $config;
     }
 
     /**
