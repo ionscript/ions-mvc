@@ -1,10 +1,10 @@
 <?php
 
-namespace Ions\Mvc\Application;
+namespace Ions\Mvc\Service;
 
 /**
  * Class Document
- * @package Ions\Mvc\Application
+ * @package Ions\Mvc\Service
  */
 class Document
 {

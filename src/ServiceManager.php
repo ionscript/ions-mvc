@@ -3,7 +3,7 @@
 namespace Ions\Mvc;
 
 /**
- * Class ServiceManager
+ * Class Service
  * @package Ions\Mvc
  */
 class ServiceManager
@@ -26,6 +26,7 @@ class ServiceManager
     /**
      * ServiceManager constructor.
      * @param array $config
+     * @throws \DomainException
      */
     public function __construct(array $config = [])
     {
@@ -34,7 +35,7 @@ class ServiceManager
 
     /**
      * @param $key
-     * @return array|mixed|object|string
+     * @return mixed
      */
     public function __get($key)
     {
@@ -47,7 +48,7 @@ class ServiceManager
      */
     public function __set($key, $value)
     {
-        $this->set($key, $value);
+        $this->setService($key, $value);
     }
 
     /**
@@ -61,7 +62,7 @@ class ServiceManager
 
     /**
      * @param $name
-     * @return array|mixed|object|string
+     * @return mixed
      */
     public function get($name)
     {
@@ -75,8 +76,9 @@ class ServiceManager
     /**
      * @param $name
      * @param $service
+     * @throws \DomainException
      */
-    public function set($name, $service)
+    public function setService($name, $service)
     {
         $this->configure(['service' => [$name => $service]]);
     }
@@ -84,6 +86,7 @@ class ServiceManager
     /**
      * @param array $config
      * @return $this
+     * @throws \DomainException
      */
     public function configure(array $config)
     {
@@ -133,7 +136,7 @@ class ServiceManager
 
     /**
      * @param $name
-     * @return array|mixed|object|string
+     * @return mixed
      * @throws \RuntimeException
      */
     private function createService($name)
@@ -153,7 +156,7 @@ class ServiceManager
 
     /**
      * @param $name
-     * @return array|mixed|object|string
+     * @return mixed
      * @throws \InvalidArgumentException
      */
     private function getService($name)
@@ -193,10 +196,9 @@ class ServiceManager
 
     /**
      * @param array $services
-     * @param $type
      * @throws \DomainException
      */
-    private function validateOverride(array $services, $type)
+    private function validateOverride(array $services)
     {
         $detected = [];
 
@@ -211,16 +213,16 @@ class ServiceManager
         }
 
         throw new \DomainException(sprintf(
-            'An updated/new %s is not allowed, as the container does not allow '
+            'An updated/new service is not allowed, as the container does not allow '
             . 'changes for services with existing instances; the following '
             . 'already exist in the container: %s',
-            $type,
             implode(', ', $detected)
         ));
     }
 
     /**
      * @param array $config
+     * @throws \DomainException
      */
     private function validateOverrides(array $config)
     {
@@ -229,7 +231,7 @@ class ServiceManager
         }
 
         if (isset($config['service'])) {
-            $this->validateOverride(array_keys($config['service']), 'service');
+            $this->validateOverride(array_keys($config['service']));
         }
     }
 }

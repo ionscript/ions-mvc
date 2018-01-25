@@ -2,37 +2,32 @@
 
 namespace Ions\Mvc\Listener;
 
-use Ions\Event\Listener;
 use Ions\Event\EventManagerInterface;
-use Ions\Mvc\MvcEvent;
-use Ions\Mvc\ServiceManager;
-use Ions\Route\RouteMatch;
+use Ions\Event\ListenerInterface;
+use Ions\Event\ListenerTrait;
+use Ions\Mvc\Action;
+use Ions\Router\RouteMatch;
 
 /**
  * Class DispatchListener
  * @package Ions\Mvc\Listener
  */
-class DispatchListener extends Listener
+class DispatchListener implements ListenerInterface
 {
-    /**
-     * @var
-     */
-    private $services;
+    use ListenerTrait;
 
     /**
-     * @param ServiceManager $serviceManager
      * @param EventManagerInterface $events
      * @param int $priority
      * @return null|void
      * @throws \Exception
      */
-    public function attach(ServiceManager $serviceManager, EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $this->services = $serviceManager;
         $this->listeners[] = $events->attach('dispatch', [$this, 'onDispatch']);
     }
 
-    public function onDispatch(MvcEvent $event)
+    public function onDispatch(Action $event)
     {
         if (null !== ($return = $event->getResult())) {
             return null;
@@ -41,8 +36,10 @@ class DispatchListener extends Listener
         $routeMatch = $event->getRouteMatch();
         $controllerName = $routeMatch instanceof RouteMatch ? $routeMatch->getParam('controller', 'error-not-found') : 'error-not-found';
 
+        $services = $event->getTarget()->getServiceManager();
+
         try {
-            $controller = $this->services->get($controllerName);
+            $controller = $services->get($controllerName);
         } catch (\Exception $exception) {
             throw $exception;
         }

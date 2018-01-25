@@ -1,6 +1,6 @@
 <?php
 
-namespace Ions\Mvc\Sender;
+namespace Ions\Mvc\Response;
 
 use Ions\Event\Event;
 use Ions\Std\ResponseInterface;

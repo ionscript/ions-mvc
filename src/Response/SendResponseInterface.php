@@ -1,12 +1,12 @@
 <?php
 
-namespace Ions\Mvc\Sender;
+namespace Ions\Mvc\Response;
 
 /**
- * Interface ResponseSenderInterface
- * @package Ions\Mvc\Sender
+ * Interface ResponseInterface
+ * @package Ions\Mvc
  */
-interface ResponseSenderInterface
+interface SendResponseInterface
 {
     /**
      * @param SendResponseEvent $event

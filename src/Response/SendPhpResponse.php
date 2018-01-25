@@ -1,14 +1,14 @@
 <?php
 
-namespace Ions\Mvc\Sender;
+namespace Ions\Mvc\Response;
 
 use Ions\Http\Response;
 
 /**
- * Class PhpEnvironmentResponseSender
- * @package Ions\Mvc\Sender
+ * Class PhpEnvResponse
+ * @package Ions\Mvc
  */
-class PhpEnvironmentResponseSender extends HttpResponseSender
+class SendPhpResponse extends SendHttpResponse
 {
     /**
      * @param SendResponseEvent $event
@@ -22,7 +22,7 @@ class PhpEnvironmentResponseSender extends HttpResponseSender
         }
 
         $this->sendHeaders($event)->sendContent($event);
-        $event->stopPropagation(true);
+        $event->stopPropagation();
         return $this;
     }
 }

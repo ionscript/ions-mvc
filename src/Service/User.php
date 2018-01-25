@@ -1,6 +1,6 @@
 <?php
 
-namespace Ions\Mvc\Application;
+namespace Ions\Mvc\Service;
 
 use Ions\Mvc\ServiceManager;
 

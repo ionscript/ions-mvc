@@ -6,8 +6,15 @@ namespace Ions\Mvc;
  * Class Model
  * @package Ions\Mvc
  */
-abstract class Model extends ServiceManager
+abstract class Model
 {
+    protected $db;
+
+    public function __construct($db)
+    {
+        $this->db = $db;
+    }
+
     /**
      * @return mixed
      */

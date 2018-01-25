@@ -1,14 +1,14 @@
 <?php
 
-namespace Ions\Mvc\Sender;
+namespace Ions\Mvc\Response;
 
 use Ions\Http\Header\HeaderInterface;
 
 /**
- * Class AbstractResponseSender
- * @package Ions\Mvc\Sender
+ * Class AbstractResponse
+ * @package Ions\Mvc
  */
-abstract class AbstractResponseSender implements ResponseSenderInterface
+abstract class AbstractSendResponse implements SendResponseInterface
 {
     /**
      * @param SendResponseEvent $event

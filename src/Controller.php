@@ -11,6 +11,11 @@ use Ions\Event;
 abstract class Controller extends ServiceManager
 {
     /**
+     * @var string
+     */
+    protected $identifier = __CLASS__;
+
+    /**
      * @var
      */
     protected $event;
@@ -21,8 +26,57 @@ abstract class Controller extends ServiceManager
     protected $events;
 
     /**
+     * @return void
+     */
+    public function indexAction()
+    {
+        $this->response->setContent('Placeholder page');
+    }
+
+    /**
+     * @param Action $e
+     * @return mixed
+     * @throws \DomainException
+     */
+    public function onDispatch(Action $e)
+    {
+        $routeMatch = $e->getRouteMatch();
+
+        if (! $routeMatch) {
+            throw new \DomainException('Missing route matches; unsure how to retrieve action');
+        }
+
+        $action = $routeMatch->getParam('action', 'not-found');
+        $method = static::getMethodFromAction($action);
+
+        if (! method_exists($this, $method)) {
+            $method = 'notFoundAction';
+        }
+
+        $actionResponse = $this->$method();
+
+        $e->setResult($actionResponse);
+
+        return $actionResponse;
+    }
+
+    /**
+     * @return void
+     * @throws \InvalidArgumentException
+     */
+    public function notFoundAction()
+    {
+        $event      = $this->getEvent();
+        $routeMatch = $event->getRouteMatch();
+        $routeMatch->setParam('action', 'not-found');
+
+        $this->response->setStatusCode(404);
+        $this->response->setContent('Action not found');
+    }
+
+    /**
      * @param $route
-     * @return array|mixed|object|string
+     * @return mixed
      * @throws \RuntimeException
      */
     public function model($route)
@@ -34,7 +88,7 @@ abstract class Controller extends ServiceManager
         $class = $this->app->getName() . '\\' . static::getModelFromRoute($route);
 
         if (class_exists($class)) {
-            $this->{$route} = new $class;
+            $this->{$route} = new $class($this->db);
         } else {
             throw new \RuntimeException(sprintf(
                 'Could not load model %s!',
@@ -64,19 +118,19 @@ abstract class Controller extends ServiceManager
         $data = array_merge($this->language->get(), $data);
 
         $theme = $this->config->get('config_view_theme');
-        $res = $this->view->render($this->app->getDirectory() . '/view/theme/' . $theme . '/' . $route . '.tpl', $data);
+        $res = $this->view->render('app/'.$this->app->getName() . '/view/theme/' . $theme . '/' . $route . '.tpl', $data);
 
         return $res;
     }
 
     /**
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function dispatch()
     {
         $event = $this->getEvent();
         $event->setName('dispatch');
-        $event->setTarget($this);
         $this->getEventManager()->triggerEvent($event);
         return $event->getResult();
     }
@@ -84,6 +138,7 @@ abstract class Controller extends ServiceManager
     /**
      * @param Event\EventManagerInterface $events
      * @return $this
+     * @throws \InvalidArgumentException
      */
     public function setEventManager(Event\EventManagerInterface $events)
     {
@@ -95,6 +150,7 @@ abstract class Controller extends ServiceManager
 
     /**
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function getEventManager()
     {
@@ -107,12 +163,13 @@ abstract class Controller extends ServiceManager
 
     /**
      * @param Event\Event $event
+     * @throws \InvalidArgumentException
      */
     public function setEvent(Event\Event $event)
     {
-        if (!$event instanceof MvcEvent) {
+        if (!$event instanceof Action) {
             $eventParams = $event->getParams();
-            $event = new MvcEvent;
+            $event = new Action;
             $event->setParams($eventParams);
             unset($eventParams);
         }
@@ -122,11 +179,12 @@ abstract class Controller extends ServiceManager
 
     /**
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public function getEvent()
     {
         if (!$this->event) {
-            $this->setEvent(new MvcEvent);
+            $this->setEvent(new Action);
         }
 
         return $this->event;
@@ -134,6 +192,7 @@ abstract class Controller extends ServiceManager
 
     /**
      * @return void
+     * @throws \InvalidArgumentException
      */
     protected function attachDefaultListeners()
     {

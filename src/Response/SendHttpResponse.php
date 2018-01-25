@@ -1,29 +1,32 @@
 <?php
 
-namespace Ions\Mvc\Sender;
+namespace Ions\Mvc\Response;
 
-use Ions\Http\Client\Stream;
+use Ions\Http\Response;
 
 /**
- * Class SimpleStreamResponseSender
- * @package Ions\Mvc\Sender
+ * Class HttpResponse
+ * @package Ions\Mvc
  */
-class SimpleStreamResponseSender extends AbstractResponseSender
+class SendHttpResponse extends AbstractSendResponse
 {
     /**
      * @param SendResponseEvent $event
      * @return $this
      */
-    public function sendStream(SendResponseEvent $event)
+    public function sendContent(SendResponseEvent $event)
     {
         if ($event->contentSent()) {
             return $this;
         }
 
         $response = $event->getResponse();
-        $stream   = $response->getStream();
-        fpassthru($stream);
+
+        echo $response->getContent();
+
         $event->setContentSent();
+
+        return $this;
     }
 
     /**
@@ -34,13 +37,14 @@ class SimpleStreamResponseSender extends AbstractResponseSender
     {
         $response = $event->getResponse();
 
-        if (! $response instanceof Stream) {
+        if (! $response instanceof Response) {
             return $this;
         }
 
-        $this->sendHeaders($event);
-        $this->sendStream($event);
-        $event->stopPropagation(true);
+        $this->sendHeaders($event)->sendContent($event);
+
+        $event->stopPropagation();
+
         return $this;
     }
 }

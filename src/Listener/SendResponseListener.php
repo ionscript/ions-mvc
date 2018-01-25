@@ -2,23 +2,25 @@
 
 namespace Ions\Mvc\Listener;
 
-use Ions\Event\Listener;
 use Ions\Event\EventManagerInterface;
 use Ions\Event\EventManager;
-use Ions\Mvc\MvcEvent;
-use Ions\Mvc\Sender\SendResponseEvent;
-use Ions\Mvc\Sender\HttpResponseSender;
-use Ions\Mvc\Sender\PhpEnvironmentResponseSender;
-use Ions\Mvc\Sender\SimpleStreamResponseSender;
-use Ions\Mvc\ServiceManager;
+use Ions\Event\ListenerInterface;
+use Ions\Event\ListenerTrait;
+use Ions\Mvc\Action;
+use Ions\Mvc\Response\SendResponseEvent;
+use Ions\Mvc\Response\SendHttpResponse;
+use Ions\Mvc\Response\SendPhpResponse;
+use Ions\Mvc\Response\SendSimpleStreamResponse;
 use Ions\Std\ResponseInterface as Response;
 
 /**
  * Class SendResponseListener
  * @package Ions\Mvc\Listener
  */
-class SendResponseListener extends Listener
+class SendResponseListener implements ListenerInterface
 {
+    use ListenerTrait;
+
     /**
      * @var
      */
@@ -27,10 +29,6 @@ class SendResponseListener extends Listener
      * @var
      */
     protected $events;
-    /**
-     * @var
-     */
-    protected $services;
 
     /**
      * @param EventManagerInterface $eventManager
@@ -45,6 +43,7 @@ class SendResponseListener extends Listener
 
     /**
      * @return EventManagerInterface
+     * @throws \InvalidArgumentException
      */
     public function getEventManager()
     {
@@ -56,24 +55,24 @@ class SendResponseListener extends Listener
     }
 
     /**
-     * @param ServiceManager $serviceManager
      * @param EventManagerInterface $events
      * @param int $priority
      * @return void
      */
-    public function attach(ServiceManager $serviceManager, EventManagerInterface $events, $priority = 1)
+    public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $this->services = $serviceManager;
         $this->listeners[] = $events->attach('finish', [$this, 'sendResponse'], -10000);
     }
 
     /**
-     * @param MvcEvent $e
+     * @param Action $e
      * @return null
+     * @throws \InvalidArgumentException
      */
-    public function sendResponse(MvcEvent $e)
+    public function sendResponse(Action $e)
     {
-        $response = $this->services->get('response');
+        $services = $e->getTarget()->getServiceManager();
+        $response = $services->get('response');
         $events = $this->getEventManager();
 
         if (!$response instanceof Response) {
@@ -82,12 +81,12 @@ class SendResponseListener extends Listener
 
         $event = $this->getEvent();
         $event->setResponse($response);
-        $event->setTarget($this);
         $events->triggerEvent($event);
     }
 
     /**
      * @return SendResponseEvent
+     * @throws \InvalidArgumentException
      */
     public function getEvent()
     {
@@ -114,8 +113,8 @@ class SendResponseListener extends Listener
     {
         $events = $this->getEventManager();
 
-        $events->attach('sendResponse', new PhpEnvironmentResponseSender(), -1000);
-        $events->attach('sendResponse', new SimpleStreamResponseSender(), -3000);
-        $events->attach('sendResponse', new HttpResponseSender(), -4000);
+        $events->attach('sendResponse', new SendPhpResponse(), -1000);
+        $events->attach('sendResponse', new SendSimpleStreamResponse(), -3000);
+        $events->attach('sendResponse', new SendHttpResponse(), -4000);
     }
 }

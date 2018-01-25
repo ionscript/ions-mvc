@@ -4,10 +4,6 @@ namespace Ions\Mvc;
 
 use Ions\Event;
 
-/**
- * Class Application
- * @package Ions\Mvc
- */
 class Application
 {
     const ERROR_NOT_FOUND = 'error-not-found';
@@ -18,7 +14,7 @@ class Application
     protected $event;
 
     /**
-     * @var array|mixed|object|string
+     * @var mixed
      */
     protected $events;
 
@@ -36,15 +32,9 @@ class Application
         'SendResponseListener' => Listener\SendResponseListener::class,
     ];
 
-    /**
-     * Application constructor.
-     * @param ServiceManager $services
-     * @param Event\EventManagerInterface|null $events
-     */
-    public function __construct(ServiceManager $services, Event\EventManagerInterface $events = null)
-    {
-        $this->services = $services;
-        $this->events = $events ?: $services->get('events');
+    public function __construct(ServiceManager $serviceManager, Event\EventManagerInterface $events = null) {
+        $this->services = $serviceManager;
+        $this->setEventManager($events ?: $serviceManager->get('events'));
     }
 
     /**
@@ -70,8 +60,8 @@ class Application
         $configuration = array_replace_recursive($configuration, $app->getConfig());
 
         $services = new ServiceManager($configuration);
-        $services->set('events', new Event\EventManager);
-        $services->set('app', $app);
+        $services->setService('events', new Event\EventManager);
+        $services->setService('app', $app);
 
         $application = new static($services);
 
@@ -87,22 +77,20 @@ class Application
      */
     public function bootstrap(array $listeners = [])
     {
-        $services = $this->services;
-        $events =  $this->events;
+        $serviceManager = $this->services;
+        $events         = $this->events;
 
         // Setup default listeners
         $listeners = array_unique(array_merge($this->listeners, $listeners));
 
-        foreach ($listeners as $name => $listener) {
-            $services->set($name, new $listener);
-            $services->get($name)->attach($services, $events);
+        foreach ($listeners as $listener) {
+            $serviceManager->get($listener)->attach($events);
         }
 
         // Setup MVC Event
-        $this->event = $event = new MvcEvent();
-        $event->setName('bootstrap');
+        $this->event = $event  = new Action();
+        $event->setName(Action::EVENT_BOOTSTRAP);
         $event->setTarget($this);
-        $event->setServiceManager($services);
 
         // Trigger bootstrap events
         $events->triggerEvent($event);
@@ -119,25 +107,36 @@ class Application
         $event = $this->event;
 
         // Trigger route event
-        $event->setName('route');
+        $event->setName(Action::EVENT_ROUTE);
         $event->stopPropagation(false); // Clear before triggering
         $events->triggerEvent($event);
 
         // Trigger dispatch event
-        $event->setName('dispatch');
-        $event->stopPropagation(false); // Clear before triggering
-        $events->triggerEvent($event);
-
-        // Trigger render event
-        $event->setName('render');
+        $event->setName(Action::EVENT_DISPATCH);
         $event->stopPropagation(false); // Clear before triggering
         $events->triggerEvent($event);
 
         // Trigger finish event
-        $event->setName('finish');
+        $event->setName(Action::EVENT_FINISH);
         $event->stopPropagation(false); // Clear before triggering
         $events->triggerEvent($event);
 
         return $this;
+    }
+
+    public function getServiceManager()
+    {
+        return $this->services;
+    }
+
+    public function setEventManager(Event\EventManagerInterface $eventManager)
+    {
+        $this->events = $eventManager;
+        return $this;
+    }
+
+    public function getEventManager()
+    {
+        return $this->events;
     }
 }
