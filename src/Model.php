@@ -44,6 +44,21 @@ abstract class Model extends ServiceManager
 
     /**
      * @param $table
+     * @return mixed
+     */
+    public function getSchema($table)
+    {
+        $schema = [];
+
+        foreach ($this->getColumns($table) as $column) {
+            $schema[$column['Field']] = $column['Default'];
+        }
+
+        return $schema;
+    }
+
+    /**
+     * @param $table
      * @param $column
      * @return mixed
      */
