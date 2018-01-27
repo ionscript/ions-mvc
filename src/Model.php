@@ -17,43 +17,39 @@ abstract class Model extends ServiceManager
     }
 
     /**
-     * @param $database
      * @return mixed
      */
-    public function getTables($database)
+    public function getTables()
     {
-        return $this->db->query("SHOW TABLES FROM `{$this->db->escape($database)}`")->rows;
+        return $this->db->query("SHOW TABLES")->rows;
     }
 
     /**
-     * @param $database
      * @param $table
      * @return mixed
      */
-    public function getDescribeColumns($database, $table)
+    public function getDescribeColumns($table)
     {
-        return $this->db->query("DESCRIBE `{$this->db->escape($database)}`.`{$this->db->escape($table)}`")->rows;
+        return $this->db->query("DESCRIBE `$table`")->rows;
     }
 
     /**
-     * @param $database
      * @param $table
      * @return mixed
      */
-    public function getColumns($database, $table)
+    public function getColumns($table)
     {
-        return $this->db->query("SHOW COLUMNS FROM `{$this->db->escape($database)}`.`{$this->db->escape($table)}`")->rows;
+        return $this->db->query("SHOW COLUMNS FROM `$table`")->rows;
     }
 
     /**
-     * @param $database
      * @param $table
      * @param $column
      * @return mixed
      */
-    public function getColumn($database, $table, $column)
+    public function getColumn($table, $column)
     {
-        return $this->db->query("SHOW COLUMNS FROM `{$this->db->escape($database)}`.`{$this->db->escape($table)}` LIKE '{$this->db->escape($column)}'")->rows;
+        return $this->db->query("SHOW COLUMNS FROM `$table` LIKE " . $this->db->escape($column))->rows;
     }
 
     /**
