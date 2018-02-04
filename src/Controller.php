@@ -101,18 +101,18 @@ abstract class Controller extends ServiceManager
 
     /**
      * @param $route
+     * @param $data
      * @param $action
      * @return mixed
      */
-    public function controller($route, $action = 'index')
+    public function controller($route, $data = [], $action = 'index')
     {
         $controller = $this->get($route);
 
         $method = static::getMethodFromAction($action);
 
-        return $controller->$method();
+        return $controller->$method($data);
     }
-
     public function view($route, array $data = [])
     {
         $data = array_merge($this->language->get(), $data);
