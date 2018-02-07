@@ -65,7 +65,7 @@ class User extends ServiceManager
             }
         }
 
-        if ($query->count) {
+        if (isset($query) && $query->count) {
             $this->session->set('user_id', $query->row['id']);
 
             $this->id = $query->row['id'];
