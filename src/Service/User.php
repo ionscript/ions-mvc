@@ -54,14 +54,18 @@ class User extends ServiceManager
     public function login($username, $email, $password, $override = false)
     {
         if ($username) {
-            $query = $this->db->query('SELECT * FROM `user` WHERE `username` = ' . $this->db->escape($username) . ' AND (password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1(' . $this->db->escape(htmlspecialchars($password, ENT_QUOTES)) . '))))) OR password = ' . $this->db->escape(md5($password)) . ") AND status = '1'");
+            $query = $this->db->query('SELECT * FROM `user` WHERE `username` = ' . $this->db->escape($username) . " AND status = '1'");
+
+            if(!password_verify($password, $query->row['password'])) {
+                return false;
+            }
         }
 
         if ($email) {
             if ($override) {
                 $query = $this->db->query('SELECT * FROM `user` WHERE LOWER(email) = ' . $this->db->escape(strtolower($email)) . " AND status = '1'");
             } else {
-                $query = $this->db->query('SELECT * FROM `user` WHERE LOWER(email) = ' . $this->db->escape(strtolower($email)) . ' AND (password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1(' . $this->db->escape($password) . '))))) OR password = ' . $this->db->escape(md5($password)) . ") AND status = '1'");
+                $query = $this->db->query('SELECT * FROM `user` WHERE LOWER(email) = ' . $this->db->escape(strtolower($email)) . ' AND password = ' . $this->db->escape(password_hash($password, PASSWORD_DEFAULT)) . " AND status = '1'");
             }
         }
 
