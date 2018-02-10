@@ -65,7 +65,7 @@ class Image
             exit('Error: PHP GD is not installed!');
         }
 
-        $file = $this->directory . '/' . $file;
+        $file = $this->directory . DIRECTORY_SEPARATOR . $file;
 
         if (file_exists($file)) {
             $this->file = $file;
