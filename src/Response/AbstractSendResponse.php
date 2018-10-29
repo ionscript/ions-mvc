@@ -22,7 +22,7 @@ abstract class AbstractSendResponse implements SendResponseInterface
 
         $response = $event->getResponse();
 
-        foreach ($response->getHeaders() as $header) {
+        foreach ($response->getHeaders()->getHeaders() as $header) {
             if ($header instanceof HeaderInterface) {
                 header($header->toString(), false);
                 continue;
